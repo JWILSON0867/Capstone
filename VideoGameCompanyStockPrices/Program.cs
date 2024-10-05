@@ -10,6 +10,17 @@ namespace VideoGameCompanyStockPrices
     {
         static async Task Main(string[] args)
         {
+
+            // Ensure the database is deleted and created fresh
+            using (var context = new ProductContext())
+            {
+                // Deletes the existing database if it exists
+                context.Database.EnsureDeleted();
+
+                // Ensures the database is created (if not exists)
+                context.Database.EnsureCreated();
+            }
+
             var client = new HttpClient();
             var apiKey = "0NGRHE8PEQBF33VY";  // Your API key
 
@@ -48,9 +59,27 @@ namespace VideoGameCompanyStockPrices
         {
             // Get stock data from Alpha Vantage
             var response = await client.GetStringAsync($"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={apiKey}");
+
+            // Log the response for debugging
+            Console.WriteLine(response);
+
             var stockData = JObject.Parse(response);
 
-            // Parse the stock prices
+            // Check if there is an error message
+            if (stockData["Error Message"] != null)
+            {
+                Console.WriteLine($"Error retrieving data for {symbol}: {stockData["Error Message"]}");
+                return; // Exit the method if there's an error
+            }
+
+            // Check if the expected property exists
+            if (stockData["Time Series (Daily)"] == null)
+            {
+                Console.WriteLine("No Time Series data found. Please check the response.");
+                return; // Exit the method if there's no data
+            }
+
+            // Proceed with parsing the stock prices
             var firstDate = stockData["Time Series (Daily)"].First;
             var date = DateTime.Parse(firstDate.Path.Split('.').Last());
             var dailyData = firstDate.First;
@@ -61,7 +90,7 @@ namespace VideoGameCompanyStockPrices
             var closePrice = (decimal)dailyData["4. close"];
             var volume = (decimal)dailyData["5. volume"];
 
-            // Save to the database
+            // Save to database
             using (var context = new ProductContext())
             {
                 var stockEntity = new ProductEntity
@@ -79,6 +108,8 @@ namespace VideoGameCompanyStockPrices
                 await context.SaveChangesAsync();
             }
         }
+
+
 
         static async Task RetrieveStockData(string symbol)
         {
