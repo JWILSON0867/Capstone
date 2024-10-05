@@ -12,7 +12,8 @@ namespace VideoGameCompanyStockPrices
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // Specify the SQLite database path
-            optionsBuilder.UseSqlite("Data Source=./products.db");
+            var dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "products.db");
+            optionsBuilder.UseSqlite($"Data Source={dbPath}");
         }
     }
 }

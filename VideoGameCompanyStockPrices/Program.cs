@@ -11,7 +11,7 @@ namespace VideoGameCompanyStockPrices
         static async Task Main(string[] args)
         {
 
-            // Ensure the database is deleted and created fresh
+            /*// Ensure the database is deleted and created fresh
             using (var context = new ProductContext())
             {
                 // Deletes the existing database if it exists
@@ -19,15 +19,15 @@ namespace VideoGameCompanyStockPrices
 
                 // Ensures the database is created (if not exists)
                 context.Database.EnsureCreated();
-            }
+            }*/
 
             var client = new HttpClient();
             var apiKey = "0NGRHE8PEQBF33VY";  // Your API key
 
             // Stock symbols
-            var nintendoSymbol = "7974.T";  // Nintendo
+            var nintendoSymbol = "NTDOY";  // Nintendo
             var microsoftSymbol = "MSFT";   // Microsoft
-            var sonySymbol = "6758.T";      // Sony
+            var sonySymbol = "SONY";      // Sony
 
             Console.WriteLine("Do you want to (1) Fetch and store new data, or (2) Retrieve data from the database?");
             var choice = Console.ReadLine();
@@ -43,7 +43,7 @@ namespace VideoGameCompanyStockPrices
             else if (choice == "2")
             {
                 // Ask the user which company's data they want to retrieve
-                Console.WriteLine("Enter the company symbol (Nintendo: 7974.T, Microsoft: MSFT, Sony: 6758.T):");
+                Console.WriteLine("Enter the company symbol (Nintendo: NTDOY, Microsoft: MSFT, Sony: SONY):");
                 var symbol = Console.ReadLine().ToUpper();
 
                 // Retrieve stock data from the database based on user input
